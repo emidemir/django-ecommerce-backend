@@ -45,10 +45,7 @@ INSTALLED_APPS = [
     # Django apps
     'users',
     'inventory',
-    'notifications',
     'orders',
-    'payments',
-    'catalog',
 
     # Third party libraries
     'phonenumber_field',
