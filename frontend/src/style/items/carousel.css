@@ -1,0 +1,36 @@
+.related-products {
+  margin-top: 4rem;
+  padding: 2rem 0;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: var(--text-dark, #1e293b);
+}
+
+.carousel-wrapper {
+  overflow-x: auto;
+  padding-bottom: 1.5rem; /* Space for the shadow of the cards */
+  scrollbar-width: none; /* Hides scrollbar for cleaner look */
+  -ms-overflow-style: none;
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 2rem;
+}
+
+.carousel-item {
+  flex: 0 0 280px; /* Matches our grid min-width from the Product List */
+  display: flex; /* Ensures the card stretches to full height */
+}
+
+/* Force the ProductCard to stretch inside the carousel item */
+.carousel-item > .product-card {
+  width: 100%;
+}

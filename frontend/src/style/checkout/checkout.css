@@ -1,0 +1,97 @@
+.checkout-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 5%;
+  }
+  
+  .stepper-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    color: #94a3b8;
+  }
+  
+  .step.active {
+    color: #2563eb;
+  }
+  
+  .step-number {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .step.active .step-number {
+    background: #2563eb;
+    color: white;
+  }
+  
+  .checkout-form-container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  
+  .checkout-form input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .next-btn {
+    width: 100%;
+    padding: 1rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  
+  .back-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 1rem;
+  }
+  
+  .action-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .checkout-success {
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }

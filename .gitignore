@@ -1,2 +1,21 @@
 /venv
 .env
+client.py
+db.sqlite3
+
+
+# REACT 
+.DS_*
+*.log
+logs
+**/*.backup.*
+**/*.back.*
+
+node_modules
+bower_components
+
+*.sublime*
+
+psd
+thumb
+sketch

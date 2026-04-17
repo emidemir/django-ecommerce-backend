@@ -1,0 +1,22 @@
+.signup-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 85vh;
+    padding: 2rem 0;
+  }
+  
+  /* We reuse most styles from login.css, but we can add signup-specific tweaks here */
+  .signup-page .auth-card {
+    max-width: 450px; /* Slightly wider for longer names */
+  }
+  
+  .auth-form .form-group {
+    margin-bottom: 1.2rem;
+  }
+  
+  .auth-form input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+  }
