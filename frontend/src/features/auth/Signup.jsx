@@ -56,6 +56,8 @@ const Signup = () => {
         if (data.refresh && data.access) {
           localStorage.setItem("refresh", data.refresh);
           localStorage.setItem("access", data.access);
+          localStorage.setItem("userID", data.userID);
+          localStorage.setItem("cartID", data.cartID);
         }
         
         navigate('/');

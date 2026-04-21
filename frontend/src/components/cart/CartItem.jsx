@@ -6,12 +6,12 @@ const CartItem = ({ item, onRemove, onUpdateQuantity }) => {
     <div className="cart-item">
       {/* Container prevents layout shift on broken images */}
       <div className="cart-item-img-container">
-        <img src={item.image} alt={item.name} className="cart-item-img" />
+        <img src={item.product.image} alt={item.product.product_name} className="cart-item-img" />
       </div>
       
       <div className="cart-item-details">
-        <h4>{item.name}</h4>
-        <p className="cart-item-price">${item.price}</p>
+        <h4>{item.product.product_name}</h4>
+        <p className="cart-item-price">${item.product.product_price}</p>
       </div>
       
       <div className="cart-item-actions">

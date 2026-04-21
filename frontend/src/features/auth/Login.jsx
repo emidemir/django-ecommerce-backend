@@ -36,6 +36,8 @@ const Login = () => {
         const data = await response.json()
         localStorage.setItem("refresh", data['refresh'])
         localStorage.setItem("access", data['access'])
+        localStorage.setItem("userID", data['userID'])
+        localStorage.setItem("cartID", data['cartID'])
         navigate('/')
       } else {
         // Cute little alert for the user
