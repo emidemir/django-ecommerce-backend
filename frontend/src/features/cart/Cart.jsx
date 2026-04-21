@@ -3,15 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import CartItem from '../../components/cart/CartItem';
 import '../../style/cart/cart.css';
 
+// ✅ Import your custom fetch wrapper and auth context
+import { apiFetch } from '../../api/apiFetch';
+import { useAuth } from '../../context/AuthContext';
+
 const Cart = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // 👈 Grab the user from context to get the cartID
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCart = async () => {
-      const cartID = localStorage.getItem("cartID");
+      // ✅ Use the cartID from your auth context instead of raw localStorage
+      const cartID = user?.cartID; 
       
       if (!cartID) {
         setIsLoading(false);
@@ -22,21 +28,14 @@ const Cart = () => {
         setIsLoading(true);
         const url = `${process.env.REACT_APP_BACKEND_URL}/carts/${cartID}/`;
         
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("access")}`
-          }
-        });
+        // ✅ Replaced fetch with apiFetch. No headers needed!
+        const response = await apiFetch(url);
 
         if (!response.ok) {
           throw new Error('Failed to fetch cart data');
         }
 
         const data = await response.json();
-        // Assuming your backend returns an object with an 'items' array
-        // Adjust 'data.items' if your serializer returns the list directly
         setCartItems(data.items || []); 
       } catch (err) {
         console.error("Cart Fetch Error:", err);
@@ -47,23 +46,20 @@ const Cart = () => {
     };
 
     fetchCart();
-  }, []);
+  }, [user?.cartID]); // ✅ Added cartID as a dependency
 
   // 1. Handler to update item quantity (PATCH)
   const handleUpdateQuantity = async (id, newQty) => {
-    // Prevent zero or negative quantities
     const quantity = parseInt(newQty);
     if (quantity < 1) return;
 
     try {
       const url = `${process.env.REACT_APP_BACKEND_URL}/cartitems/${id}/`;
       
-      const response = await fetch(url, {
+      // ✅ Replaced fetch with apiFetch. 
+      // Only method and body are needed; headers are handled automatically.
+      const response = await apiFetch(url, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("access")}`
-        },
         body: JSON.stringify({ quantity: quantity })
       });
 
@@ -71,7 +67,6 @@ const Cart = () => {
 
       const updatedItem = await response.json();
 
-      // Update local state: find the item and replace it with the response from server
       setCartItems(prevItems => 
         prevItems.map(item => 
           item.id === id 
@@ -87,22 +82,18 @@ const Cart = () => {
 
   // 2. Handler to remove an item (DELETE)
   const handleRemove = async (id) => {
-    // Optional: Add a confirmation dialog
     if (!window.confirm("Remove this item from your cart?")) return;
 
     try {
       const url = `${process.env.REACT_APP_BACKEND_URL}/cartitems/${id}/`;
       
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("access")}`
-        }
+      // ✅ Replaced fetch with apiFetch. Just pass the method.
+      const response = await apiFetch(url, {
+        method: "DELETE"
       });
 
       if (!response.ok) throw new Error("Failed to remove item");
 
-      // Update local state: filter out the removed item
       setCartItems(prevItems => prevItems.filter(item => item.id !== id));
     } catch (err) {
       console.error("Remove Error:", err);

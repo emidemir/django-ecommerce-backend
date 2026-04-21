@@ -43,6 +43,13 @@ const router = createBrowserRouter([
   },
 ]);
 
+
+
+// React context usage
+// https://www.freecodecamp.org/news/how-to-use-react-context/
+
+
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

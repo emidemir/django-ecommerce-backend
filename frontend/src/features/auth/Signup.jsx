@@ -1,82 +1,34 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import AuthFormWrapper from '../../components/auth/AuthFormWrapper';
 import '../../style/auth/signup.css';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { signup } = useAuth();
 
-  // Updated state to handle first and last name separately
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    firstName: '', lastName: '', email: '', password: '', confirmPassword: ''
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (formData.password !== formData.confirmPassword) {
       alert("Oops! Those passwords don't match. Give it another go!");
       return;
     }
-
-    const url = `${process.env.REACT_APP_BACKEND_URL}/register/`;
-
     try {
-      // Updated payload to send firstName and lastName
-      const payload = {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        password: formData.password
-      };
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (data.refresh && data.access) {
-          localStorage.setItem("refresh", data.refresh);
-          localStorage.setItem("access", data.access);
-          localStorage.setItem("userID", data.userID);
-          localStorage.setItem("cartID", data.cartID);
-        }
-        
-        navigate('/');
-      } else {
-        alert("Oh no! We couldn't create your account right now. Double check your info and try again!");
-        
-        // Reset the state with the new fields
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: ''
-        });
-      }
-      
-    } catch (error) {
-      console.error("Network error during signup:", error);
-      alert("Uh oh, we're having trouble connecting. Please try again later!");
+      await signup(formData); // 👈 replace fetch block
+      navigate('/');
+    } catch (err) {
+      alert("Oh no! We couldn't create your account right now. Double check your info and try again!");
+      setFormData({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
     }
   };
 

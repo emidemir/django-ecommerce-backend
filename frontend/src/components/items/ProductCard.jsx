@@ -2,10 +2,23 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../style/items/productCard.css';
 
+// ✅ Import your custom fetch wrapper and auth context
+import { apiFetch } from '../../api/apiFetch';
+import { useAuth } from '../../context/AuthContext';
+
 const ProductCard = ({ product }) => {
   const [isAdding, setIsAdding] = useState(false);
+  const { user } = useAuth(); // 👈 Grab the user from context
 
   const handleAddToCart = async () => {
+    // ✅ Safety check: ensure the user is logged in and has a cart
+    if (!user || !user.cartID) {
+      alert("Please log in to add items to your cart!");
+      // Optional: You could also use navigate('/auth/login') here 
+      // if you import useNavigate from 'react-router-dom'
+      return; 
+    }
+
     setIsAdding(true);
     try {
       const url = `${process.env.REACT_APP_BACKEND_URL}/cartitems/`;
@@ -13,15 +26,12 @@ const ProductCard = ({ product }) => {
       const payload = {
         quantity: 1,
         product: product.id,
-        cart: localStorage.getItem('cartID')
+        cart: user.cartID // ✅ Use cartID securely from context
       }
       
-      const response = await fetch(url, {
+      // ✅ Replaced fetch with apiFetch. Headers handled automatically!
+      const response = await apiFetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("access")}`
-        },
         body: JSON.stringify(payload) 
       });
 

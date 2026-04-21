@@ -4,15 +4,19 @@ import '../../style/items/productDetail.css';
 import ReviewSection from '../reviews/ReviewSection';
 import RelatedProducts from '../recommendations/RelatedProducts';
 
+// ✅ Import your custom fetch wrapper and auth context
+import { apiFetch } from '../../api/apiFetch';
+import { useAuth } from '../../context/AuthContext';
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth(); // 👈 Grab the user from context
 
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // New states for the Add to Cart action
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -22,13 +26,8 @@ const ProductDetail = () => {
         setIsLoading(true);
         const url = `${process.env.REACT_APP_BACKEND_URL}/products/${id}/`;
         
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("access")}`
-          }
-        });
+        // ✅ Replaced fetch with apiFetch. No headers needed for GET!
+        const response = await apiFetch(url);
 
         if (!response.ok) {
           if (response.status === 404) throw new Error("Product not found.");
@@ -48,20 +47,21 @@ const ProductDetail = () => {
     fetchProductDetails();
   }, [id]);
 
-  // The Add to Cart handler
   const handleAddToCart = async () => {
+    // ✅ Safety check: ensure the user is logged in
+    if (!user || !user.cartID) {
+      alert("Please log in to add items to your cart!");
+      return; 
+    }
+
     setIsAdding(true);
     try {
-      // Reusing your endpoint suffix logic
-      const url = `${process.env.REACT_APP_BACKEND_URL}/cartitems/${id}/`;
+      const url = `${process.env.REACT_APP_BACKEND_URL}/cartitems/`;
       
-      const response = await fetch(url, {
+      // ✅ Replaced fetch with apiFetch. Headers handled automatically!
+      const response = await apiFetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("access")}`
-        },
-        body: JSON.stringify({ quantity: quantity })
+        body: JSON.stringify({ quantity: quantity, product: id, cart: user.cartID })
       });
 
       if (!response.ok) throw new Error("Could not add to cart.");
