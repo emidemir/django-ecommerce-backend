@@ -28,6 +28,7 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ('user', 'items')
 
 class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
     class Meta:
         model = Comment
         fields = '__all__'
