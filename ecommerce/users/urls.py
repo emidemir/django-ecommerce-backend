@@ -1,7 +1,7 @@
 from django.urls import path, include
 
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView, TokenVerifyView
-from .views import LoginView, RegisterView, LogoutView, UserViewSet, CartItemViewSet, CartViewSet
+from .views import LoginView, RegisterView, LogoutView, UserViewSet, CartItemViewSet, CartViewSet, CommentViewSet
 
 from rest_framework.routers import DefaultRouter
 
@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'cartitems', CartItemViewSet, basename='cartitem')
 router.register(r'carts', CartViewSet, basename='cart')
+router.register(r'comments', CommentViewSet, basename='comment')
 
 urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

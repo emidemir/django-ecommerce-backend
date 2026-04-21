@@ -9,8 +9,8 @@ from rest_framework import viewsets
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User, CartItem, Cart
-from .serializers import UserSerializer, CartItemSerializer, CartSerializer
+from users.models import User, CartItem, Cart, Comment
+from .serializers import UserSerializer, CartItemSerializer, CartSerializer, CommentSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 # from django.core.exceptions import MultipleObjectsReturned
@@ -107,3 +107,19 @@ class CartItemViewSet(viewsets.ModelViewSet):
             existing_item.save()
         else:
             serializer.save(cart=cart)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        # Django automatically creates two ways to reference this field:
+        # product → expects a Product object
+        # product_id → expects a raw integer (the ID)
+        
+        queryset = Comment.objects.all()
+        product_id = self.request.query_params.get('product')
+
+        if product_id:
+            queryset = queryset.filter(product_id=product_id)
+
+        return queryset
