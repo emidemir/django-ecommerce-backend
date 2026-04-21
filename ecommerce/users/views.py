@@ -9,8 +9,8 @@ from rest_framework import viewsets
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User
-from .serializers import UserSerializer
+from users.models import User, CartItem, Cart
+from .serializers import UserSerializer, CartItemSerializer, CartSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 # from django.core.exceptions import MultipleObjectsReturned
@@ -37,7 +37,7 @@ def LoginView(request):
 
     refresh = RefreshToken.for_user(user)
 
-    return Response({'msg':'Login succesfull', 'refresh': str(refresh), 'access': str(refresh.access_token)}, status=status.HTTP_200_OK)
+    return Response({'msg':'Login succesfull', 'refresh': str(refresh), 'access': str(refresh.access_token), 'userID': str(user.id), 'cartID': str(user.cart.id)}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -61,8 +61,10 @@ def RegisterView(request):
         password=password)
 
     refresh = RefreshToken.for_user(new_user)
+    
+    cart, _ = Cart.objects.get_or_create(user=new_user)
 
-    return Response({'msg':'Register succesfull', 'refresh': str(refresh), 'access': str(refresh.access_token)}, status=status.HTTP_200_OK)
+    return Response({'msg':'Register succesfull', 'refresh': str(refresh), 'access': str(refresh.access_token), 'userID': str(new_user.id), 'cartID': str(cart.id)}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -82,3 +84,26 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return User.objects.filter(email = self.request.user.email)
+
+class CartViewSet(viewsets.ModelViewSet):
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user.id)
+
+class CartItemViewSet(viewsets.ModelViewSet):
+    
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+    def perform_create(self, serializer):
+        product = serializer.validated_data['product']
+        cart = Cart.objects.get(user=self.request.user)
+
+        existing_item = CartItem.objects.filter(cart=cart, product=product).first()
+
+        if existing_item:
+            existing_item.quantity += 1
+            existing_item.save()
+        else:
+            serializer.save(cart=cart)
