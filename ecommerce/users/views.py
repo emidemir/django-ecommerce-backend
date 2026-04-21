@@ -103,7 +103,7 @@ class CartItemViewSet(viewsets.ModelViewSet):
         existing_item = CartItem.objects.filter(cart=cart, product=product).first()
 
         if existing_item:
-            existing_item.quantity += 1
+            existing_item.quantity += serializer.validated_data['quantity']
             existing_item.save()
         else:
             serializer.save(cart=cart)

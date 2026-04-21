@@ -2,7 +2,7 @@
 .env
 client.py
 db.sqlite3
-
+/docs
 
 # REACT 
 .DS_*
