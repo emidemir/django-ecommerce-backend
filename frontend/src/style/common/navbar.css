@@ -4,7 +4,7 @@
   align-items: center;
   padding: 1rem 5%;
   background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Slightly softer shadow */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -23,6 +23,7 @@
   margin: 0 2rem;
 }
 
+/* Updated to allow search results to anchor here */
 .search-container {
   display: flex;
   background: var(--background-light);
@@ -30,6 +31,7 @@
   border-radius: 8px;
   padding: 4px 12px;
   transition: border-color 0.2s;
+  position: relative; 
 }
 
 .search-container:focus-within {
@@ -52,7 +54,69 @@
   font-size: 1.1rem;
 }
 
-/* --- The Fix for the Right Side --- */
+/* --- Search Results Dropdown --- */
+.search-results-box {
+  position: absolute;
+  top: calc(100% + 5px); /* Sits exactly below the bar with a tiny gap */
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-color);
+  z-index: 1100;
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--background-light);
+  transition: background 0.2s;
+}
+
+.search-result-item:hover {
+  background-color: var(--background-light);
+}
+
+.search-thumb {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-right: 12px;
+  background-color: #f1f5f9;
+}
+
+.search-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.search-price {
+  font-size: 0.85rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+.no-results {
+  padding: 1.5rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* --- The Right Side --- */
 .nav-right {
   display: flex;
   align-items: center;
@@ -61,8 +125,8 @@
 .nav-links {
   display: flex;
   align-items: center;
-  list-style: none; /* Removes the bullet points */
-  gap: 2rem; /* Adds space between links */
+  list-style: none;
+  gap: 2rem;
   margin: 0;
   padding: 0;
 }
@@ -82,7 +146,7 @@
   align-items: center;
   gap: 8px;
   background: var(--background-light);
-  padding: 6px 16px 6px 6px; /* Extra padding on right */
+  padding: 6px 16px 6px 6px;
   border-radius: 30px;
   font-weight: 500;
   border: 1px solid var(--border-color);

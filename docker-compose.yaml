@@ -1,0 +1,14 @@
+services:
+  # https://github.com/PrettyPrinted/youtube_video_code/tree/master/2024/05/18/Getting%20Started%20With%20Elasticsearch%20in%20Django%20-%20Faster%20Text%20Search%20for%20Your%20Apps/django_elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    volumes:
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+
+volumes:
+  esdata01:
