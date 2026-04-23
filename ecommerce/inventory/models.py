@@ -14,11 +14,11 @@ class Product(models.Model):
     category            = models.CharField(max_length=11, choices=Categories.choices, null=True, blank=True)
 
 def product_image_path(instance, file):
-    return '/'.join(['product-images/', instance.product.id])
+    return '/'.join([f'{str(instance.product.id)}/',file])
 
 # Store product images in a SW3 bucket and get them when product is viewed. This table only holds the urls of the images
 class productImages(models.Model):
-    product             = models.OneToOneField(Product, related_name="product_image", on_delete= models.CASCADE)
+    product             = models.ForeignKey(Product, related_name="product_image", on_delete= models.CASCADE)
     url                 = models.ImageField(upload_to=product_image_path)
 
 
