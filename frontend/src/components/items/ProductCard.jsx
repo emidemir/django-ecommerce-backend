@@ -14,8 +14,6 @@ const ProductCard = ({ product }) => {
     // ✅ Safety check: ensure the user is logged in and has a cart
     if (!user || !user.cartID) {
       alert("Please log in to add items to your cart!");
-      // Optional: You could also use navigate('/auth/login') here 
-      // if you import useNavigate from 'react-router-dom'
       return; 
     }
 
@@ -29,7 +27,6 @@ const ProductCard = ({ product }) => {
         cart: user.cartID // ✅ Use cartID securely from context
       }
       
-      // ✅ Replaced fetch with apiFetch. Headers handled automatically!
       const response = await apiFetch(url, {
         method: "POST",
         body: JSON.stringify(payload) 
@@ -55,15 +52,15 @@ const ProductCard = ({ product }) => {
     <div className="product-card">
       <Link to={`/items/${product.id}`} className="product-link">
         <div className="product-image-container">
-          {/* Using product.product_image?.url if nested, otherwise product.image */}
+          {/* 👇 FIX: Added [0] to grab the first image from the array safely */}
           <img 
-            src={product.product_image?.url || product.image || 'https://via.placeholder.com/150'} 
+            src={product.product_image?.[0]?.url || product.image || 'https://via.placeholder.com/150'} 
             alt={product.product_name} 
             className="product-image" 
           />
         </div>
         <div className="product-info">
-          <span className="product-category">{product.product_category}</span>
+          <span className="product-category">{product.category}</span> {/* Also updated product_category to category based on your JSON */}
           <h3 className="product-title">{product.product_name}</h3>
         </div>
       </Link>

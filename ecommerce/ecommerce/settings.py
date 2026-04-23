@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'django_countries',
     'rest_framework_simplejwt.token_blacklist', # For a proper logout view
     'django_elasticsearch_dsl',
-    'storages',
+    'storages', #https://django-storages.readthedocs.io/en/latest/
 ]
 
 MIDDLEWARE = [
@@ -224,7 +224,14 @@ AWS_QUERYSTRING_AUTH = False
 # Ensure uploaded files don't overwrite each other if they have the same name
 AWS_S3_FILE_OVERWRITE = False
 
-# Custom domain mapping (Optional but recommended)
-# If set, Django will use this to build the URL. 
-# Example: http://127.0.0.1:9000/ecommerce-media/products/image.jpg
+# settings.py
+
+# 1. Use HTTP for local development
+AWS_S3_USE_SSL = False  
+
+# If AWS_S3_ENDPOINT_URL is 'http://127.0.0.1:9000', 
+# this results in '127.0.0.1:9000/products'
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_ENDPOINT_URL.split('//')[1]}/{AWS_STORAGE_BUCKET_NAME}"
+
+# 3. Explicitly tell django-storages to use http for the generated links
+AWS_S3_URL_PROTOCOL = 'http:'

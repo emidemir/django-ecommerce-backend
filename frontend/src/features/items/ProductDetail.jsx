@@ -75,6 +75,30 @@ const ProductDetail = () => {
     }
   };
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // RESET the carousel when a new product loads
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [product?.id]);
+  // Safely go to the next image (loops back to start if at the end)
+  const nextImage = () => {
+    if (product?.product_image) {
+      setCurrentImageIndex((prev) => 
+        prev === product.product_image.length - 1 ? 0 : prev + 1
+      );
+    }
+  };
+
+  // Safely go to the previous image (loops to the end if at the start)
+  const prevImage = () => {
+    if (product?.product_image) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? product.product_image.length - 1 : prev - 1
+      );
+    }
+  };
+
   if (isLoading) return <div className="loading-state">Loading product details...</div>;
   if (error) return <div className="error-state">Error: {error}</div>;
   if (!product) return null;
@@ -84,8 +108,47 @@ const ProductDetail = () => {
       <button className="back-btn" onClick={() => navigate(-1)}>← Back to Products</button>
       
       <div className="detail-container">
-        <div className="detail-image">
-          <img src={product.product_image?.url || 'https://via.placeholder.com/500'} alt={product.product_name} />
+      <div className="detail-image carousel-container">
+          {/* Strict check: Ensure product_image exists, is an array, 
+            has length > 0, AND that the current index actually exists 
+          */}
+          {Array.isArray(product?.product_image) && product.product_image.length > 0 && product.product_image[currentImageIndex] ? (
+            <>
+              {product.product_image.length > 1 && (
+                <button 
+                  className="carousel-arrow left-arrow" 
+                  onClick={prevImage}
+                  style={{ position: 'absolute', left: '10px', top: '50%' }} // temporary inline style to ensure it shows up
+                >
+                  &#10094;
+                </button>
+              )}
+
+              <img 
+                src={product.product_image[currentImageIndex].url || 'https://via.placeholder.com/500'} 
+                alt={`${product.product_name} - view ${currentImageIndex + 1}`} 
+                className="main-carousel-image"
+                style={{ width: '100%', objectFit: 'contain' }} // Ensures it doesn't break layout
+              />
+
+              {product.product_image.length > 1 && (
+                <button 
+                  className="carousel-arrow right-arrow" 
+                  onClick={nextImage}
+                  style={{ position: 'absolute', right: '10px', top: '50%' }}
+                >
+                  &#10095;
+                </button>
+              )}
+            </>
+          ) : (
+            // Absolute fallback if the array is missing, empty, or malformed
+            <img 
+              src='https://via.placeholder.com/500' 
+              alt={product?.product_name || 'Product'} 
+              style={{ width: '100%', objectFit: 'contain' }} 
+            />
+          )}
         </div>
         
         <div className="detail-info">
