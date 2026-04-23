@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'django_countries',
     'rest_framework_simplejwt.token_blacklist', # For a proper logout view
     'django_elasticsearch_dsl',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -189,3 +190,41 @@ ELASTICSEARCH_DSL={
     }
 }
 
+
+# ============================== MINIO STORAGE ==================================
+# 1. Credentials
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+# 2. The Bucket
+# You must create this bucket in the MinIO console beforehand.
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+# 3. The Endpoint URL (The crucial step)
+# This overrides the default AWS S3 URL and points Boto3 to your MinIO in
+AWS_S3_ENDPOINT_URL = os.environ.get('AWS_S3_ENDPOINT_URL')
+# 4. Routing settings
+# Set to False if you are developing locally over HTTP.
+# In production with HTTPS, set this to True.
+AWS_S3_USE_SSL = False
+
+STORAGES = {
+    # This handles user-uploaded media (models.ImageField, models.FileField)
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    # This handles your static assets. We'll leave it local for now.
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+# Prevent Boto3 from adding complex authentication signatures to every single image URL
+# Set this to False if your bucket policy in MinIO is set to "Public" for reading.
+AWS_QUERYSTRING_AUTH = False
+
+# Ensure uploaded files don't overwrite each other if they have the same name
+AWS_S3_FILE_OVERWRITE = False
+
+# Custom domain mapping (Optional but recommended)
+# If set, Django will use this to build the URL. 
+# Example: http://127.0.0.1:9000/ecommerce-media/products/image.jpg
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_ENDPOINT_URL.split('//')[1]}/{AWS_STORAGE_BUCKET_NAME}"
