@@ -3,6 +3,7 @@
 client.py
 db.sqlite3
 /docs
+/images
 
 # REACT 
 .DS_*
