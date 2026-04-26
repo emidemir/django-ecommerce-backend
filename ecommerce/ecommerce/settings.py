@@ -90,17 +90,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -235,3 +224,16 @@ AWS_S3_CUSTOM_DOMAIN = f"{AWS_S3_ENDPOINT_URL.split('//')[1]}/{AWS_STORAGE_BUCKE
 
 # 3. Explicitly tell django-storages to use http for the generated links
 AWS_S3_URL_PROTOCOL = 'http:'
+
+# ============================== DATABASE ==================================
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME':os.environ.get('POSTGRES_DB_NAME'),
+        'USER':os.environ.get('POSTGRES_DB_USER'),
+        'PASSWORD':os.environ.get('POSTGRES_DB_PASSWORD'),
+        'HOST':os.environ.get('POSTGRES_DB_HOST'), # Docker service name
+        'PORT':os.environ.get('POSTGRES_DB_PORT'),
+    }
+}
