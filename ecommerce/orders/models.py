@@ -1,6 +1,6 @@
 from django.db import models
 
-from users.models import User
+from users.models import User, Address
 from inventory.models import Product
 
 # Create your models here.
@@ -14,6 +14,7 @@ class Order(models.Model):
         RECEIVED = "Received"
         DELIVERED = "Delivered"
     status            = models.CharField(max_length=10, choices=Status.choices)
+    adress            = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True)
 
 class OrderItem(models.Model):
     order    = models.ForeignKey(Order, related_name='order_items', on_delete=models.CASCADE)

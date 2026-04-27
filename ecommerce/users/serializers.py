@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from inventory.serializers import ProductSerializer
-from .models import User, Cart, CartItem, Comment
+from .models import User, Cart, CartItem, Comment, Address
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,3 +33,8 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = '__all__'
         read_only_fields= ['date']
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = '__all__'

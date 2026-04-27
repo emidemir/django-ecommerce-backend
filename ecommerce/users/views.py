@@ -9,8 +9,8 @@ from rest_framework import viewsets
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from users.models import User, CartItem, Cart, Comment
-from .serializers import UserSerializer, CartItemSerializer, CartSerializer, CommentSerializer
+from users.models import User, CartItem, Cart, Comment, Address
+from .serializers import UserSerializer, CartItemSerializer, CartSerializer, CommentSerializer, AddressSerializer
 
 from django.core.exceptions import ObjectDoesNotExist
 # from django.core.exceptions import MultipleObjectsReturned
@@ -123,3 +123,9 @@ class CommentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(product_id=product_id)
 
         return queryset
+    
+class AddressViewSet(viewsets.ModelViewSet):
+    serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        return Address.objects.filter(user=self.request.user.id)
