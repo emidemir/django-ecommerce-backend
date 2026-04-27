@@ -26,7 +26,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['total_price', 'order_items']
+        fields = ['id', 'status', 'created_at', 'total_price', 'order_items']
 
     def create(self, validated_data):
         items_data = validated_data.pop('order_items')
