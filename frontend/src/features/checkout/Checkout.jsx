@@ -5,9 +5,11 @@ import { useAuth } from '../../context/AuthContext';
 import '../../style/checkout/checkout.css';
 
 const Checkout = () => {
-  const { user } = useAuth();
+  const { user } = useAuth(); // Access secure user context [cite: 65]
   const [step, setStep] = useState(0);
   const [savedAddresses, setSavedAddresses] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   const [formData, setFormData] = useState({
     label: '',
     country: '',
@@ -19,12 +21,12 @@ const Checkout = () => {
     postal_code: '',
   });
 
-  // 1. Fetch saved addresses on mount
+  // Fetch saved addresses using the custom request wrapper [cite: 38, 39]
   useEffect(() => {
     const fetchSavedAddresses = async () => {
       try {
         const url = `${process.env.REACT_APP_BACKEND_URL}/addresses/`;
-        const response = await apiFetch(url); 
+        const response = await apiFetch(url); // Headers and Auth applied automatically [cite: 45]
         
         if (response.ok) {
           const data = await response.json();
@@ -37,11 +39,9 @@ const Checkout = () => {
     fetchSavedAddresses();
   }, []);
 
-  // 2. Save the currently written address
   const handleSaveCurrentAddress = async () => {
     try {
       const url = `${process.env.REACT_APP_BACKEND_URL}/addresses/`;
-      
       const response = await apiFetch(url, {
         method: "POST", 
         body: JSON.stringify({ ...formData, user: user?.id }) 
@@ -51,12 +51,9 @@ const Checkout = () => {
         const newAddress = await response.json();
         setSavedAddresses(prev => [...prev, newAddress]); 
         alert("Address saved successfully!");
-      } else {
-        throw new Error("Failed to save address.");
       }
     } catch (error) {
       console.error("Error saving address:", error);
-      alert("Could not save address. Please check your inputs.");
     }
   };
 
@@ -82,12 +79,41 @@ const Checkout = () => {
     }
   };
 
-  const handleNext = () => setStep(prev => prev + 1);
-  const handleBack = () => setStep(prev => prev - 1);
+  // Modified: Triggered directly from the Shipping step
+  const handleConfirmAndPay = async () => {
+    setIsProcessing(true);
+    try {
+      const url = `${process.env.REACT_APP_BACKEND_URL}/checkout/`;
+      const response = await apiFetch(url, {
+        method: "POST",
+        body: JSON.stringify({ 
+          cartID: user?.cartID, // Pull cartID securely from context [cite: 60, 72]
+          address: formData 
+        })
+      });
+
+      if (!response.ok) throw new Error("Failed to initiate checkout");
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url; // Redirect to external Stripe session
+      } else {
+        setStep(1); // Move to success step locally if no redirect is needed
+      }
+
+    } catch (error) {
+      console.error("Checkout Error:", error);
+      alert("Error preparing payment. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="checkout-page">
-      <CheckoutStepper currentStep={step} />
+      {/* Stepper adjusted: Passing 0 for Shipping, 1 for Success */}
+      <CheckoutStepper currentStep={step === 2 ? 1 : step} />
       
       <div className="checkout-form-container">
         {step === 0 && (
@@ -105,7 +131,7 @@ const Checkout = () => {
             </div>
 
             <form className="checkout-form">
-              <input name="label" type="text" placeholder="Address Label (e.g., Home, Work)" value={formData.label} onChange={handleFieldChange} required />
+              <input name="label" type="text" placeholder="Address Label" value={formData.label} onChange={handleFieldChange} required />
               <div className="form-row">
                 <input name="country" type="text" placeholder="Country" value={formData.country} onChange={handleFieldChange} required />
                 <input name="city" type="text" placeholder="City" value={formData.city} onChange={handleFieldChange} required />
@@ -122,38 +148,25 @@ const Checkout = () => {
               
               <div className="address-actions">
                 <button type="button" className="save-address-btn" onClick={handleSaveCurrentAddress}>Save Address to Profile</button>
-                <button type="button" onClick={handleNext} className="next-btn">Next: Payment</button>
+                <button 
+                  type="button" 
+                  onClick={handleConfirmAndPay} 
+                  className="next-btn"
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? "Redirecting to Payment..." : "Confirm & Pay"}
+                </button>
               </div>
             </form>
           </div>
         )}
 
-        {step === 1 && (
-          <div className="checkout-step">
-            <h2>Payment Method</h2>
-            <div className="payment-options">
-              <button className="pay-card-btn">Credit/Debit Card</button>
-              <button className="pay-paypal-btn">PayPal</button>
-            </div>
-            <form className="checkout-form">
-              <input type="text" placeholder="Card Number" />
-              <div className="form-row">
-                <input type="text" placeholder="MM/YY" />
-                <input type="text" placeholder="CVC" />
-              </div>
-              <div className="action-btns">
-                <button type="button" onClick={handleBack} className="back-link">Back</button>
-                <button type="button" onClick={handleNext} className="next-btn">Confirm Order</button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {step === 2 && (
+        {/* Local success step (triggered if Stripe bypass is used or redirect fails) */}
+        {(step === 1 || step === 2) && (
           <div className="checkout-success">
             <div className="success-icon">✅</div>
             <h2>Order Confirmed!</h2>
-            <p>Thank you for your purchase. Your order #12345 is being processed.</p>
+            <p>Thank you for your purchase. Your order is being processed.</p>
             <button onClick={() => window.location.href = '/'} className="next-btn">Return Home</button>
           </div>
         )}

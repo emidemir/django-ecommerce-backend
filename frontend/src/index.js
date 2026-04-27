@@ -16,6 +16,8 @@ import Orders from './features/dashboard/Orders';
 import Signup from './features/auth/Signup';
 import Profile from './features/dashboard/Profile';
 import ProtectedRoute from './features/auth/ProtectedRoute'
+import CheckoutSuccess from './features/checkout/CheckoutSuccess'
+import CheckoutFailed from './features/checkout/CheckoutFailed'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
           { path: '/checkout', element: <Checkout /> },
           { path: '/dashboard/profile', element: <Profile /> },
           { path: '/dashboard/orders', element: <Orders /> },
+          {path: "/checkout/success",element: <CheckoutSuccess />,},
+          {path: "/checkout/cancelled",element: <CheckoutFailed />,}
         ],
       },
     ],

@@ -237,3 +237,10 @@ DATABASES = {
         'PORT':os.environ.get('POSTGRES_DB_PORT'),
     }
 }
+
+
+# ======================= STRIPE (PAYMENT) CREDS ============================
+#https://medium.com/@mathur.danduprolu/saas-applications-with-django-adding-subscription-billing-with-stripe-part-4-7-681898f8da67
+STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY')
