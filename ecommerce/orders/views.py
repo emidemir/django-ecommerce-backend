@@ -12,7 +12,7 @@ from rest_framework import status
 
 from .serializers import OrderSerializer
 from .models import Order, OrderItem
-from users.models import User, Cart
+from users.models import User, Cart, CartItem
 from inventory.models import Product
 
 import stripe
@@ -81,30 +81,32 @@ def stripeWebhookView(request):
     return HttpResponse(status=200)
 
 def handle_successful_payment(session):
-    if session.get("payment_status") != "paid":
+    if session.payment_status != "paid":
         return
 
-    stripe_session_id = session["id"]
-    if Order.objects.filter(stripe_session_id=stripe_session_id).exists():
+    user_id = session.metadata["user_id"]
+
+    try:
+        user = User.objects.get(id=user_id)
+        # Fetch the items from your DB instead of metadata
+        cart_items = CartItem.objects.filter(cart=user.cart.id)
+    except (User.DoesNotExist, CartItem.DoesNotExist):
         return
-
-    user = User.objects.get(id=session["metadata"]["user_id"])
-
-    # Django's serializer format needs deserializing differently than plain JSON
-    cart_items = serializers.deserialize("json", session["metadata"]["cart"])
 
     with transaction.atomic():
         order = Order.objects.create(
             user=user,
-            amount=session["amount_total"] / 100,
-            stripe_session_id=stripe_session_id,
-            status="completed",
+            total_price=session.amount_total / 100,
+            stripe_session_id=session.id,
+            status="Delivered",
         )
-        for deserialized_item in cart_items:
-            item = deserialized_item.object  # the actual CartItem instance
+        
+        for item in cart_items:
             OrderItem.objects.create(
                 order=order,
                 product=item.product,
                 quantity=item.quantity,
-                unit_price=item.product.product_price,
             )
+
+        # Clear the cart
+        cart_items.delete()

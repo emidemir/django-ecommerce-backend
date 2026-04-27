@@ -1,11 +1,12 @@
 from django.db import models
+import uuid
 
 from users.models import User, Address
 from inventory.models import Product
 
 # Create your models here.
 class Order(models.Model):
-    id                = models.UUIDField(primary_key=True)
+    id                = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user              = models.ForeignKey(User, related_name='orders', on_delete=models.PROTECT)
     adress            = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True)
     
