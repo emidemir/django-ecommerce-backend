@@ -187,7 +187,7 @@ const ProductDetail = () => {
       </div>
 
       <ReviewSection productId={id} />
-      <RelatedProducts category={product.category} />
+      <RelatedProducts productId={id} />
     </div>
   );
 };

@@ -1,13 +1,16 @@
 from django.shortcuts import render
+from django.core import serializers
 
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.decorators import api_view, renderer_classes
 
 from elasticsearch_dsl.query import MultiMatch
 from elasticsearch_dsl import Q
 from ecommerce.documents import ProductDocument
+
+from pgvector.django import CosineDistance
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -46,3 +49,13 @@ def SearchView(request, text):
 
     # Return the clean, serialized data
     return Response(data=serializer.data, status=HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getSuggestedItems(request, productID):
+    try:
+        targetProduct = Product.objects.get(id=productID)
+    except:
+        return Response({'msg':'Invalid ID'}, status=HTTP_400_BAD_REQUEST)
+    related_products = Product.objects.annotate(distance=CosineDistance('embedding', getattr(targetProduct, 'embedding'))).order_by('distance')[:5]
+    return Response(data={'suggested_products':ProductSerializer(related_products, many=True).data}, status=HTTP_200_OK)

@@ -23,7 +23,8 @@ services:
     command: server /data --console-address ":9001"
   postgres_db:
     container_name: postgres
-    image: postgres
+    # Replaced 'postgres' with the pg18 pgvector image
+    image: pgvector/pgvector:pg18 
     environment:
       POSTGRES_USER: ${POSTGRES_DB_USER}
       POSTGRES_PASSWORD: ${POSTGRES_DB_PASSWORD}
@@ -46,6 +47,7 @@ services:
     command: listen --forward-to http://host.docker.internal:8000/webhook/
     environment:
       - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+
 networks:
   db:
     driver: bridge

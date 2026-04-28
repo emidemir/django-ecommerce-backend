@@ -1,10 +1,14 @@
 from django.db import models
+from pgvector.django import VectorField
 
 class Product(models.Model):
     id                  = models.UUIDField(primary_key=True)
     product_name        = models.CharField(max_length=100)
     product_price       = models.DecimalField(max_digits=7, decimal_places=2)
     product_description = models.TextField()
+
+    # For product recommendation
+    embedding = VectorField(dimensions=384, null=True, blank=True)
 
     class Categories(models.TextChoices):
         ELECTRONICS = "ELECTRONICS", "Electronics"
