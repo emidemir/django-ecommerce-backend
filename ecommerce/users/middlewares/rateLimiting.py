@@ -15,7 +15,7 @@ class RateLimitingMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         # Configure limits 
-        self.rate_limit = 1 
+        self.rate_limit = 100 
         self.time_window = 60 
 
     def __call__(self, request):
