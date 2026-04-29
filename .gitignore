@@ -5,6 +5,8 @@ db.sqlite3
 /docs
 /images
 
+README_v0.md
+
 # REACT 
 .DS_*
 *.log
