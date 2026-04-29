@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist', # For a proper logout view
     'django_elasticsearch_dsl',
     'storages', #https://django-storages.readthedocs.io/en/latest/
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -245,3 +246,17 @@ STRIPE_PUBLISHABLE_KEY = os.environ.get('STRIPE_PUBLISHABLE_KEY')
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_CURRENCY = os.environ.get('STRIPE_CURRENCY')
 STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET')
+
+# =============================== CACHING ====================================
+# Django original doc: https://docs.djangoproject.com/en/6.0/topics/cache/#redis
+# Django-redis client doc: https://github.com/jazzband/django-redis
+# Usage: https://www.django-rest-framework.org/api-guide/caching/
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

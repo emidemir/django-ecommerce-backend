@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.core import serializers
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -22,7 +24,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'pk'
-
+    
+    # If you are suspicious of whether it works or not, override the get_queryset method in a way it sleeps for two second.
+    # You'll see the the first time you request this endpoint, it takes 2 seconds to return the result, but the second time, it'll
+    # be instantaneous since it's cached at the first request.
+    # ALSO, Invalidation can be implemented using django signals, which I did.
+    # BTW, I'm just following this video: https://www.youtube.com/watch?v=5W2Yff00H8s
+    @method_decorator(cache_page(60 * 60 * 2, key_prefix='product_list'))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
 #https://django-elasticsearch-dsl.readthedocs.io/en/latest/quickstart.html#search
 #https://elasticsearch-dsl.readthedocs.io/en/latest/search_dsl.html#the-search-object
 @api_view(['GET'])

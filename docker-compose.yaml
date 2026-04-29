@@ -47,7 +47,16 @@ services:
     command: listen --forward-to http://host.docker.internal:8000/webhook/
     environment:
       - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
-
+  redis:
+        image: redis:latest
+        container_name: redis-cache
+        ports:
+            - '6379:6379'
+        volumes:
+            - redis-data:/data
+        environment:
+            - REDIS_ARGS=--requirepass your_password_here --appendonly yes
+        restart: unless-stopped
 networks:
   db:
     driver: bridge
@@ -56,3 +65,4 @@ volumes:
   db:
   minio_data:
   esdata01:
+  redis-data:
