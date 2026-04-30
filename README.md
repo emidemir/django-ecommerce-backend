@@ -211,6 +211,23 @@ def SearchView(request, text):
     return Response(data=serializer.data, status=HTTP_200_OK)
 ```
 
+### Understanding the Elasticsearch Package Layers
+
+The Elasticsearch Python ecosystem has three distinct layers that can be confusing at first. Here's how they fit together:
+
+| Layer | Package | Role | Read the docs? |
+|---|---|---|---|
+| **Bottom** | `elasticsearch` | The raw network client. Sends JSON directly to the server. You'd have to hand-write massive JSON dictionaries to do anything useful. | Almost never |
+| **Middle** | `elasticsearch-dsl` | Gives you Pythonic `Search()`, `filter()`, and `Q()` objects that compile down to that raw JSON for you. | **Yes** — whenever you search or filter data. [Docs ↗](https://elasticsearch-dsl.readthedocs.io/) |
+| **Top** | `django-elasticsearch-dsl` | The Django bridge. Watches your models via signals, syncs saves/deletes to the index, and converts results back to QuerySets via `.to_queryset()`. | **Yes, but only once** — to write `documents.py` and learn the `manage.py` commands. [Docs ↗](https://django-elasticsearch-dsl.readthedocs.io/) |
+
+### Rule of Thumb
+
+> **Setting up or syncing data?** (writing `documents.py`, mapping fields, running `manage.py search_index`) → **`django-elasticsearch-dsl` docs**
+>
+> **Querying data?** (full-text search, filters, fuzzy matching, AND/OR logic) → **`elasticsearch-dsl` docs**
+
+
 ---
 
 ## 3. MinIO (Object Storage)
